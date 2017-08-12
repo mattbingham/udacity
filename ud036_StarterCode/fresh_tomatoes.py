@@ -1,102 +1,110 @@
-# Improved import
-import webbrowser, os, re
+import webbrowser
+import os
+import re
 
 # Improved with normalize and moved styles and js to separate files
 main_page_head = '''
 <!DOCTYPE html>
-<html lang="en" class="no-js" lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Fresher Tomatoes!</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap 3 -->
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Fresher Tomatoes!</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 '''
 # The main page layout and title bar
 main_page_content = '''
-  <body>
-    <!-- Trailer Video Modal -->
-    <div class="modal" id="trailer">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <a href="#" class="hanging-close" data-dismiss="modal" aria-hidden="true">
-            <img src="https://lh5.ggpht.com/v4-628SilF0HtHuHdu5EzxD7WRqOrrTIDi_MhEG6_qkNtUK5Wg7KPkofp_VJoF7RS2LhxwEFCO1ICHZlc-o_=s0#w=24&h=24"/>
+<body id="bootstrap-override">
+  <!-- Trailer Video Modal -->
+  <div class="modal" id="trailer">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <a href="#" class="hanging-close" data-dismiss="modal" aria-hidden="true">
+          <img src="img/modal_close.png" alt="Close this pop-up box">
+        </a>
+        <div class="scale-media" id="trailer-video-container"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Main Page Content -->
+  <div class="top">
+    <nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"><img class="spin" src="img/logo_fresher-tomatoes.png" alt="Fresher Tomatoes trailers">
+            <span class="fresher">Fresher</span>&nbsp;<span class="tomatoes">Tomatoes!</span>
           </a>
-          <div class="scale-media" id="trailer-video-container">
-          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Main Page Content -->
-    <div class="container">
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    </nav>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
         <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="#">Fresh Tomatoes Movie Trailers</a>
+          <div class="section-box">
+            <h2 class="text-center">Movies</h2>
+              {image_tiles_movies}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="container">
-      {movie_tiles}
-    </div>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
 '''
-
-
 # A single movie entry html template
-movie_tile_content = '''
-<div class="col-md-6 col-lg-4 movie-tile text-center video-wrapper" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
-<svg class="video-overlay-play-button" viewBox="0 0 200 200" alt="Play video">
-    <circle cx="100" cy="100" r="90" fill="none" stroke-width="15" stroke="#fff"/>
-    <polygon points="70, 55 70, 145 145, 100" fill="#fff"/>
-</svg>
-    <img src="{poster_image_url}" width="180" height="270">
-    <h2>{movie_title}</h2>
+tile_content = '''
+<div class="col-md-6 col-lg-4 movie-tile text-center video-wrapper" data-trailer-youtube-id="{vid_id}" data-toggle="modal" data-target="#trailer">
+  <div class="tiles-container">
+    <img src="{image}" width="180" height="270" alt="{title} poster image">
+    <h2 class="text-center">{title}</h2>
+    <p class="year"><i class="fa fa-calendar" aria-hidden="true"></i> {year}</p>
+    <h3 class="text-center length"><i class="fa fa-clock-o" aria-hidden="true"></i> {length}</h3>
+  </div>
 </div>
 '''
 
 
-def create_movie_tiles_content(movies):
+def image_tiles(movies):
     # The HTML content for this section of the page
     content = ''
     for movie in movies:
         # Extract the youtube ID from the url
-        youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.trailer_youtube_url)
-        youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
-        trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
-                              else None)
+        vid_id_match = re.search(
+            r'(?<=v=)[^&#]+', movie.trailer)
+        vid_id_match = vid_id_match or re.search(
+            r'(?<=be/)[^&#]+', movie.trailer)
+        vid_id = (vid_id_match.group(0) if vid_id_match else None)
 
-        # Append the tile for the movie with its content filled in
-        content += movie_tile_content.format(
-            movie_title=movie.title,
-            poster_image_url=movie.poster_image_url,
-            trailer_youtube_id=trailer_youtube_id
+        # Append the tile for the movie and with its content filled in
+        content += tile_content.format(
+            title=movie.title,
+            image=movie.image,
+            vid_id=vid_id,
+            length=movie.length,
+            year=movie.year
         )
+
     return content
 
 
-def open_movies_page(movies):
+def open_website(movies):
     # Create or overwrite the output file
     output_file = open('fresh_tomatoes.html', 'w')
 
-    # Replace the movie tiles placeholder generated content
+    # Replace the movie or tv tiles placeholder generated content
     rendered_content = main_page_content.format(
-        movie_tiles=create_movie_tiles_content(movies))
+        image_tiles_movies=image_tiles(movies))
 
     # Output the file
     output_file.write(main_page_head + rendered_content)
@@ -105,3 +113,7 @@ def open_movies_page(movies):
     # open the output file in the browser (in a new tab, if possible)
     url = os.path.abspath(output_file.name)
     webbrowser.open('file://' + url, new=2)
+
+
+def show_trailer(self):
+    webbrowser.open(self.trailer_url)
