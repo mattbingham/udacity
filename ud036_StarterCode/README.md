@@ -2,6 +2,14 @@
 ___
 Source code for a Movie Trailer website.
 
+### Instructions to run program
+___
+This guide assumes you have saved all files to your computer and have Python IDLE installed.
+After saving all files to you computer:
+
+- Open `entertainment_center.py` in Python IDLE
+- Goto **Run** > **Run Module** 
+
 ### Changes to original code
 ___
 I've tried very hard to get the website looking as nice as possible by adding additional features I thought would complement the website whilst adhering to the project specification. I've noted some of the changes to the original requirements for the project below.
