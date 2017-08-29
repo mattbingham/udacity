@@ -27,6 +27,9 @@ ___
 - **CSS** links for older browsers and IE and is well ordered with comments
 - *SVG* image used for logo
 - `p` regular paragraph text appears on article hover
+- Added default 16x16 favicon
+- Added Android 192x192 favicon
+- Added Android theme color support
 
 #### Credits
 - Boilerplate by [HTML5 UP](html5up.net)
