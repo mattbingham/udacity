@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# SQL files
+.sql
+
+# PyCharm files
+.idea
+.idea/
+
 # C extensions
 *.so
 
