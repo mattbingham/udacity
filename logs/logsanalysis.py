@@ -10,20 +10,20 @@ DBNAME = "news"
 
 
 # Return which days had more than 1% request errors
+# Should return 12908
 def request_errors():
   db = psycopg2.connect(database=DBNAME)
   c = db.cursor()
   c.execute("""
-  SELECT count(status), count(time) as percentage
+  SELECT count(*) / (SELECT count(*) FROM log)
   FROM log
-  WHERE (log.status LIKE '%404%'
-  )
+  WHERE log.status LIKE '%404%'
   GROUP BY log.status;
   """)
   print("\nError logs:\n")
   print(c.fetchall())
   # Split code and number
-  #print("{} -  total").format(log)
+  # print("{} - {} total").format(log[0][0], log[0][1])
 
   db.close()
 
