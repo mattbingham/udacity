@@ -12,41 +12,36 @@ adhering to SQL and Python (PEP-8) best practices.
 ## Instructions
 In order to test this y
 
-psql -d news -f newsdata.sql
-
 ## Database information
 
-- The database name is ````news````
-- Information is stored in the ````newsdata.sql```` file
+- The database name is `news`
 
 ### Tables / Columns of news database
 
-+-------------------------+
-|       articles          |
-|----------+--------------|
-| author   | int          | References authors(id)
+| articles |              |
+|----------|--------------|
+| author   | int          | *References authors(id)*
 | title    | text         |
 | slug     | text         |
 | lead     | text         |
 | body     | text         |
 | time     | timestamp tz |
 | id       | int          |
-+----------+--------------+
-|       authors           |
-+----------+--------------+
+
+| authors  |              |
+|----------|--------------|
 | name     | text         |
 | bio      | text         |
 | id       | int          |
-+----------+--------------+
-|         log             |
-+----------+--------------+
+
+| log      |              |
+|----------|--------------|
 | path     | text         |
 | ip       | inet         |
 | method   | text         |
 | status   | text         |
 | time     | timestamp tz |
 | id       | int          |
-+----------+--------------+
 
 ### Goals passing
 
